@@ -1,5 +1,6 @@
 from sqlite3 import IntegrityError
 from rest_framework import viewsets
+from rest_framework import filters
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
@@ -51,6 +52,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowSerializer
     permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('following__username',)
 
     def get_queryset(self):
         user = self.request.user
@@ -68,9 +71,12 @@ class FollowViewSet(viewsets.ModelViewSet):
             User,
             username=self.request.data['following']
         )
-
+        if author == user:
+            raise ValidationError(
+                'Нельзя подписаться на самого себя'
+            )
         try:
-            serializer.save(user=user, author=author)
+            serializer.save(user=user, following=author)
         except IntegrityError:
             raise ValidationError(
                 'Пользователь уже подписан на этого автора'

@@ -52,7 +52,7 @@ class Follow(models.Model):
         null=False,
     )
 
-    author = models.ForeignKey(
+    following = models.ForeignKey(
         User,
         related_name='following',
         verbose_name='Автор',
@@ -64,4 +64,4 @@ class Follow(models.Model):
     class Meta:
         verbose_name = ('Подписки')
         verbose_name_plural = ('Подписки')
-        unique_together = ['user', 'author']
+        unique_together = ['user', 'following']
