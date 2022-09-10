@@ -12,6 +12,10 @@ class Group(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = 'Группы'
+        verbose_name_plural = 'Группы'
+
 
 class Post(models.Model):
     text = models.TextField()
@@ -31,6 +35,10 @@ class Post(models.Model):
     def __str__(self):
         return self.text
 
+    class Meta:
+        verbose_name = 'Публикации'
+        verbose_name_plural = 'Публикации'
+
 
 class Comment(models.Model):
     author = models.ForeignKey(
@@ -40,6 +48,10 @@ class Comment(models.Model):
     text = models.TextField()
     created = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'Комментарии'
+        verbose_name_plural = 'Комментарии'
 
 
 class Follow(models.Model):
@@ -62,6 +74,12 @@ class Follow(models.Model):
     )
 
     class Meta:
-        verbose_name = ('Подписки')
-        verbose_name_plural = ('Подписки')
+        verbose_name = 'Подписки'
+        verbose_name_plural = 'Подписки'
+
         unique_together = ['user', 'following']
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('following')),
+                name='Нельзя подписаться на самого себя')
+        ]

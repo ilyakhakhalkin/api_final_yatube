@@ -1,22 +1,17 @@
-from sqlite3 import IntegrityError
 from rest_framework import viewsets
 from rest_framework import filters
-from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
-from django.db import IntegrityError
 
 from posts.models import Post
 from posts.models import Group
+from posts.models import User
 from .serializers import PostSerializer
 from .serializers import GroupSerializer
 from .serializers import CommentSerializer
 from .serializers import FollowSerializer
 from .permissions import IsAuthorOrReadonly
-
-User = get_user_model()
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -34,18 +29,20 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = GroupSerializer
 
 
+def get_post_by_id(post_id):
+    return get_object_or_404(Post, pk=post_id)
+
+
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = (IsAuthorOrReadonly,)
 
     def get_queryset(self):
-        post_id = self.kwargs.get('post_id')
-        post = get_object_or_404(Post, pk=post_id)
+        post = get_post_by_id(post_id=self.kwargs.get('post_id'))
         return post.comments.all()
 
     def perform_create(self, serializer):
-        post_id = self.kwargs.get('post_id')
-        post = get_object_or_404(Post, pk=post_id)
+        post = get_post_by_id(post_id=self.kwargs.get('post_id'))
         serializer.save(author=self.request.user, post=post)
 
 
@@ -61,23 +58,8 @@ class FollowViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = self.request.user
-
-        if 'following' not in self.request.data.keys():
-            raise ValidationError(
-                'Отсутствует обязательное поле в теле запроса'
-            )
-
         author = get_object_or_404(
             User,
             username=self.request.data['following']
         )
-        if author == user:
-            raise ValidationError(
-                'Нельзя подписаться на самого себя'
-            )
-        try:
-            serializer.save(user=user, following=author)
-        except IntegrityError:
-            raise ValidationError(
-                'Пользователь уже подписан на этого автора'
-            )
+        serializer.save(user=user, following=author)
