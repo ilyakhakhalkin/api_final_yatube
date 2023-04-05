@@ -1,87 +1,85 @@
 # Yatube API
-### Описание
-Yatube - платформа для авторов, предоставляющая следующие возможности:
-1. Размещение и просмотр публикаций
-2. Комментирование публикаций
-3. Подписки на авторов
+### Description
+Yatube is a platform designed for authors, providing a range of features that include:
 
-В этом репозитории содержится только API часть проекта.
+- Posting and browsing publications
+- Commenting on publications
+- Subscribing to authors for regular updates.
 
-### Технологии
+This repository contains only the API part of the project.
+
+### Tech stack
 1. Python 3.7.5
 2. Django 2.2.16
 3. Django Rest Framework
 4. JWT + Djoser
 5. Dotenv
 
-### Как запустить проект
-Клонировать репозиторий и перейти в него в командной строке:
+### How to run the project
+To run the project, follow these steps:
 
+Clone the repository to your computer using the git clone command.
 ```
 git clone https://github.com/ilyakhakhalkin/api_final_yatube.git
 ```
 
+Go to the project directory in terminal:
 ```
 cd api_final_yatube
 ```
 
-Cоздать и активировать виртуальное окружение:
-
+Create and activate virtual environment:
 ```
 python3 -m venv venv
 ```
-
 ```
 source venv/bin/activate
 ```
 
-Установить зависимости из файла requirements.txt:
-
+Install dependencies from requirements.txt:
 ```
 python3 -m pip install --upgrade pip
 ```
-
 ```
 pip install -r requirements.txt
 ```
 
-Выполнить миграции:
-
+Run migrations:
 ```
 python3 manage.py migrate
 ```
 
-Запустить проект:
-
+Run dev server:
 ```
 python3 manage.py runserver
 ```
 
-Когда вы запустите проект, по адресу  http://127.0.0.1:8000/redoc/ будет доступна документация для API Yatube. В документации описано, как работатает наш API. Документация представлена в формате Redoc.
+When you run the project, the documentation for the Yatube API will be available at http://127.0.0.1:8000/redoc/. The documentation explains how our API works and is presented in the Redoc format.
 
-### ReadOnly доступ:
-Неавторизованным пользователям открыт доступ в режиме ReadOnly:
+### ReadOnly access:
+Unauthenticated users have read-only access, meaning they can make the following requests:
 ```
-GET: api/v1/posts/ - запрос всех публикаций
-GET: api/v1/posts/{id}/ - запрос публикации по идентификатору
+GET: api/v1/posts/ - request for all publications
+GET: api/v1/posts/{id}/ - request for a specific publication by its ID
 
-GET: api/v1/groups/ - запрос всех групп
-GET: api/v1/groups/{id}/ - запрос группы по идентификатору
+GET: api/v1/groups/ - request for all groups
+GET: api/v1/groups/{id}/ - request for a specific group by its ID
 
-GET: api/v1/{post_id}/comments/ - запрос всех комментариев публикации
-GET: api/v1/{post_id}/comments/{id}/ - запрос комментария по идентификатору
+GET: api/v1/{post_id}/comments/ - request for all comments on a publication
+GET: api/v1/{post_id}/comments/{id}/ - request for a specific comment by its ID on a publication
 ```
 
-### Аутентификация
-Аутентификация доступна только зарегистрированным пользователям.
-Для регистрации создайте суперпользователя:
+### Authentication
+Authentication is only available to registered users.
+To register, you need to create a superuser account by following these steps:
 ```
 python3 manage.py createsuperuser
 ```
-Регистрация обычных пользователей доступна суперпользователям через админ-панель Django.
 
-Аутентификация происходит с помощью JWT-токена.
-Для создания нового токена нужно передать логин и пароль пользователя:
+Regular user registration is available to superusers through the Django admin panel.
+
+Authentication is done using a JWT token.
+To create a new token, you need to pass the username and password by following these steps:
 ```
 {
     "username": "username",
